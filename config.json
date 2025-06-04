@@ -1,0 +1,21 @@
+{
+  "models": {
+    "text_model": "gemma:2b",
+    "vision_model": "llava:latest"
+  },
+  "ollama_host": "http://localhost:11434",
+  "generation_parameters": {
+    "temperature": 0.4,
+    "num_predict": 700
+  },
+  "video_processing": {
+    "frames_to_analyze": 5
+  },
+  "prompts": {
+    "image_analysis": "Analyze this image. Suggest a detailed and descriptive filename base (lowercase, underscores for spaces, no file extension). If the image features a recurring subject or scene element, try to use a consistent and specific term for that element. Example for a general scene: 'ginger_cat_sleeping_blue_armchair_sunlit_room'. Avoid generic names. Avoid the word \"document\", describe the type of document instead.\n\n{metadata_prompt_section}Only output the suggested filename base.",
+    "video_frame_analysis": "This is frame {frame_num} of {total_frames} from a video. Describe this video frame in detail. Focus on key subjects, actions, and setting. If a clear, recurring subject is visible, mention it consistently.\n\n{metadata_prompt_section}Only output the description of this single frame.",
+    "video_summary": "The following are sequential descriptions of scenes from a video. Based *only* on the content of these descriptions, suggest a detailed and descriptive filename base (lowercase, underscores for spaces, no file extension). Focus on the main theme, subject, or overall progression depicted in these scenes. If a recurring subject or theme is evident, ensure this recurring element is part of the filename base. Do NOT include literal text like 'frame 1' in the filename itself. Avoid generic names.\n\n{metadata_prompt_section}Sequential Scene Descriptions:\n{combined_descriptions}\n\nOnly output the suggested filename base.",
+    "pdf_analysis": "Analyze the following text content (extracted from a PDF). Suggest a detailed and descriptive filename base (lowercase, underscores for spaces, no file extension). Example: 'project_phoenix_q3_marketing_strategy_meeting_notes'. Avoid generic names.\n\n{metadata_prompt_section}PDF Text content (first {max_text_chars} chars, if available):\n{content_to_send_for_llm}\n\nOnly output the suggested filename base.",
+    "text_analysis": "Analyze the following text content. Suggest a detailed and descriptive filename base (lowercase, underscores for spaces, no file extension). Example: 'project_phoenix_q3_marketing_strategy_meeting_notes'. Avoid generic names.\n\n{metadata_prompt_section}Text content (first {max_text_chars} chars, if available):\n{content_to_send_for_llm}\n\nOnly output the suggested filename base."
+  }
+}
