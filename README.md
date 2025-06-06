@@ -1,87 +1,97 @@
-# **Ollama File Namer**
+Ollama AI File Renamer
+A powerful GUI-based utility that uses local Ollama models to intelligently rename files based on their content. It can analyze images, videos, PDFs, and text/code files to suggest descriptive, uniform filenames, helping you organize your digital life.
 
-This Python script analyzes files in a specified folder using Ollama with local large language models (LLMs) to generate new, descriptive filenames based on their content. It supports text files, images, PDFs (text extraction), and video files (by analyzing extracted frames).
+Features
+Content-Aware Renaming: Leverages local multimodal and text-based LLMs through Ollama to understand the content of your files.
 
-## **Features**
+Broad File Support:
 
-* Analyzes various file types:  
-  * **Images:** Uses a vision model (e.g., LLaVA) to describe image content.  
-  * **Videos:** Extracts frames, describes them with a vision model, and then summarizes these descriptions with a text model.  
-  * **PDFs:** Extracts text content (for text-based PDFs) using pypdf and analyzes it with a text model.  
-  * **Text Files:** Analyzes plain text content with a text model.  
-* Generates descriptive filenames based on content and metadata.  
-* Option to keep the original filename and append the new suggestion.  
-* Customizable Ollama models for text and vision.  
-* Adjustable LLM generation parameters (temperature, number of tokens to predict).  
-* Dry-run mode to preview changes before renaming.  
-* Option to skip files by extension.  
-* User confirmation for each rename (can be overridden).
+Images: Analyzes image content to create descriptive names (e.g., ginger_cat_sleeping_on_a_blue_armchair.jpg).
 
-## **Dependencies**
+Videos: Extracts multiple frames, analyzes them, and summarizes the content for a relevant filename.
 
-1. **Python 3.x**  
-2. **Ollama:** Ensure Ollama is installed and running. You can download it from [ollama.com](https://ollama.com).  
-   * You'll also need to pull the models you intend to use via the Ollama CLI. For example:  
-     ollama pull llava:latest  \# Default vision model  
-     ollama pull gemma:2b     \# Default text model
+PDFs & Text: Reads text content from documents and code to suggest names based on their subject matter.
 
-3. **FFmpeg:** Required for video file processing (frame extraction and duration). It must be installed and accessible in your system's PATH.  
-   * **Linux (Debian/Ubuntu):** sudo apt update && sudo apt install ffmpeg  
-   * **macOS (Homebrew):** brew install ffmpeg  
-   * **Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add the bin folder to your PATH.  
-   * Verify by running ffmpeg \-version and ffprobe \-version in your terminal.  
-4. **Python Libraries:**  
-   * ollama: The official Python client for Ollama.  
-     pip install ollama
+Smart Grouping: An optional second pass that uses an LLM to group similarly-themed files under a single, uniform name (e.g., kitten_on_couch_001.jpg, kitten_on_couch_002.jpg).
 
-   * pypdf: For extracting text from PDF files.  
-     pip install pypdf
+User-Friendly GUI: A simple Tkinter interface to select folders, choose models, and configure options without touching the command line.
 
-## **Usage**
+Highly Customizable: All prompts sent to the AI models can be easily edited from within the application, allowing you to tailor the renaming logic to your exact needs.
 
-Save the main.py script and make it executable if necessary (chmod \+x ollama\_rename.py on Linux/macOS).
+Safe Operations: Includes a "Dry Run" mode by default to preview all proposed changes before any files are actually renamed.
 
-python main.py \<folder\_path\> \[options\]
+Prerequisites
+Before you begin, ensure you have the following installed and running:
 
-### **Arguments**
+Python 3.7+
 
-* folder: (Required) Path to the folder containing files to rename.
+Ollama: The application requires a running Ollama instance. You can download it from ollama.com.
 
-### **Options**
+Ollama Models: You need at least one vision model and one text model. You can pull them using the command line:
 
-* \--text-model TEXT\_MODEL: Ollama model for text files (default: gemma:2b). Set to an empty string ("") to skip text file processing.  
-* \--vision-model VISION\_MODEL: Ollama model for image and video frame analysis (default: llava:latest). Set to an empty string ("") to skip image/video frame processing.  
-* \--ollama-host OLLAMA\_HOST: Ollama server address (default: http://localhost:11434).  
-* \--dry-run: Show proposed renames without actually renaming files. (Highly recommended for first runs).  
-* \--skip-extensions .ext1 .ext2 ...: List of file extensions to skip (e.g., .log .tmp). Remember to include the leading dot.  
-* \--max-text-chars NUM: Maximum number of characters to send from text files (including PDFs) for analysis (default: 2000).  
-* \--temperature TEMP: Temperature for Ollama model generation (a float, default: 0.4). Higher values (e.g., 0.7) make output more random; lower values (e.g., 0.2) make it more deterministic.  
-* \--num-predict NUM\_PREDICT: Maximum number of tokens for the LLM to predict (default: 70). Affects the length of the generated description/filename.  
-* \--video-frames NUM\_FRAMES: Number of frames to analyze from video files (default: 5). Set to 0 to disable video processing.  
-* \--keep-original-name: If specified, the LLM-suggested name (base) will be appended to the original filename (base), keeping the original extension. E.g., original.jpg \+ new\_suggestion \-\> original\_new\_suggestion.jpg.  
-* \-y, \--yes: Automatically confirm all renames. **Use with extreme caution\!**
+# Recommended vision model
+ollama pull llava
 
-## **Examples**
+# Recommended text model
+ollama pull gemma:2b
 
-1. **Dry run on a folder named "MyPhotos", using default models:**  
-   python ollama\_rename.py ./MyPhotos \--dry-run
+FFmpeg: This is required for processing video files (extracting frames and reading duration).
 
-2. **Process** files **in "Documents", using mistral for text and skipping images, auto-confirming renames (caution\!):**  
-   python ollama\_rename.py /path/to/Documents \--text-model mistral \--vision-model "" \-y
+Download FFmpeg from the official site: ffmpeg.org/download.html
 
-3. **Process videos in "VacationClips", analyzing 10 frames per video, and keeping the original name part:**  
-   python ollama\_rename.py ./VacationClips \--video-frames 10 \--keep-original-name
+Crucially, you must add the bin directory from your FFmpeg installation to your system's PATH environment variable so the script can execute ffmpeg and ffprobe.
 
-4. **Process images in "Artwork" with a higher temperature for more varied suggestions:**  
-   python ollama\_rename.py ./Artwork \--temperature 0.7 \--text-model "" 
+Installation
+Clone or Download the Repository:
+Get the project files onto your local machine.
 
-5. **Process PDFs in "Reports", skipping .bak files:**  
-   python ollama\_rename.py ./Reports \--skip-extensions .bak \--vision-model "" \--video-frames 0
+git clone https://github.com/your-username/ollama-file-renamer.git
+cd ollama-file-renamer
 
-## **Notes**
+Install Python Dependencies:
+The required Python libraries are listed in requirements.txt. Install them using pip:
 
-* **Backup your files\!** Especially before running without \--dry-run or with \-y.  
-* Processing can be slow, especially for videos, as it involves multiple LLM calls and FFmpeg operations per file.  
-* The quality of filenames depends heavily on the chosen LLMs and the clarity of the file content.  
-* Ensure FFmpeg is correctly installed and in your system's PATH if you want to process video files.  
-* If pypdf is not installed, PDF text extraction will be skipped, and the script will rely on metadata for PDFs.
+pip install -r requirements.txt
+
+How to Use
+Start the Application:
+Make sure your Ollama application is running in the background. Then, run the gui.py script:
+
+python gui.py
+
+Select a Folder:
+Click the "Browse..." button to choose the folder containing the files you want to rename.
+
+Choose Your Models:
+
+Select a Vision Model from the dropdown (e.g., llava:latest). This will be used for analyzing images and video frames.
+
+Select a Text Model (e.g., gemma:2b). This is used for summarizing video frame descriptions, analyzing text/PDF files, and performing the optional grouping pass.
+
+Click "Refresh Models" at any time to update the lists with your currently available Ollama models.
+
+Set Your Options:
+
+Dry Run: (Default: On) Preview all changes in the log without renaming any files. It is highly recommended to run this first.
+
+Group Similar Filenames: (Default: Off) Enable the second AI pass to group files. This is slower but produces more uniform names for related files.
+
+Auto-confirm all: (Default: Off) When unchecked, the script will not rename files even if "Dry Run" is off. Check this box to perform actual renaming operations. USE WITH CAUTION.
+
+Adjust other settings like Temperature and Video Frames to Analyze as needed.
+
+Run the Renamer:
+Click the "Run Renamer" button to start the process. You can monitor the progress in the log output window. Click "Stop" at any time to gracefully halt the process.
+
+Configuration
+The application's behavior is controlled by the config.json file, which is created automatically on the first run.
+
+models: Sets the default vision and text models to be selected on startup.
+
+ollama_host: The URL for your Ollama instance.
+
+generation_parameters: Controls the AI's creativity (temperature) and response length (num_predict).
+
+video_processing: Sets the default number of frames to extract from videos.
+
+prompts: Contains all the prompt templates sent to the language models. You can edit this file directly, but it's easier to use the "Edit Prompts..." button in the UI to fine-tune the AI's behavior.
